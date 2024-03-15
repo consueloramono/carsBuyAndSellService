@@ -20,7 +20,7 @@ class ProfileController {
 
       res.status(201).json({ profile: newProfile });
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
       res.status(500).json({ error: "Помилка при створенні профілю" });
     }
   }
@@ -44,7 +44,7 @@ class ProfileController {
 
       res.status(200).json({ profile: updatedProfile });
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
       res.status(500).json({ error: "Помилка при оновленні профілю" });
     }
   }

@@ -12,7 +12,7 @@ class ListingController {
 
       res.status(201).json({ success: true, data: newListing });
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
       res
         .status(500)
         .json({ success: false, error: "Помилка при створенні оголошення" });
@@ -25,7 +25,7 @@ class ListingController {
 
       res.status(200).json({ success: true, data: formattedListings });
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
       res.status(500).json({
         success: false,
         error: "Помилка при отриманні списку оголошень",
@@ -45,7 +45,7 @@ class ListingController {
 
       res.status(200).json({ success: true, data: responseData });
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
       res.status(404).json({ success: false, error: "Оголошення не знайдено" });
     }
   }
@@ -64,7 +64,7 @@ class ListingController {
 
       res.status(200).json({ success: true, data: updatedListing });
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
       res
         .status(500)
         .json({ success: false, error: "Помилка при оновленні оголошення" });
@@ -82,7 +82,7 @@ class ListingController {
         .status(200)
         .json({ success: true, message: "Оголошення успішно видалено" });
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
       res
         .status(500)
         .json({ success: false, error: "Помилка при видаленні оголошення" });

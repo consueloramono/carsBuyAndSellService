@@ -11,7 +11,7 @@ class UserController {
       });
       return res.json(userData);
     } catch (error) {
-      console.log("error");
+      throw new Error(error);
     }
   }
 
@@ -25,7 +25,7 @@ class UserController {
       });
       return res.json(userData);
     } catch (error) {
-      console.log("error");
+      throw new Error(error);
     }
   }
 
@@ -36,7 +36,7 @@ class UserController {
       res.clearCookie("refreshToken");
       return res.json(token);
     } catch (error) {
-      console.log("error");
+      throw new Error(error);
     }
   }
 
@@ -50,7 +50,7 @@ class UserController {
       });
       return res.json(userData);
     } catch (error) {
-      console.log("error");
+      throw new Error(error);
     }
   }
 }
