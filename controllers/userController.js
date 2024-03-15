@@ -53,12 +53,6 @@ class UserController {
       console.log("error");
     }
   }
-  async createProfile() {
-    try {
-    } catch (error) {
-      res.json(error);
-    }
-  }
 }
 
 module.exports = new UserController();
