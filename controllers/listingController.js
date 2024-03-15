@@ -1,41 +1,14 @@
-const listingSchema = require("../models/listingSchema");
-const profileService = require("../service/profileService");
-const userSchema = require("../models/userSchema");
+const listingService = require("../service/listingService");
+
 class ListingController {
   async createListing(req, res, next) {
     const { refreshToken } = req.cookies;
-    const userId = await profileService.getUserIdFromToken(refreshToken);
 
-    if (!userId) {
-      return res.status(401).json({ error: "Невірний або прострочений токен" });
-    }
     try {
-      const {
-        make,
-        model,
-        year,
-        price,
-        description,
-        carCondition,
-        photos,
-        location,
-        contactInformation,
-        saleOrRentStatus,
-      } = req.body;
-
-      const newListing = await listingSchema.create({
-        make,
-        model,
-        year,
-        price,
-        description,
-        carCondition,
-        photos,
-        location,
-        contactInformation,
-        saleOrRentStatus,
-        publisher: userId,
-      });
+      const newListing = await listingService.createListing(
+        req.body,
+        refreshToken
+      );
 
       res.status(201).json({ success: true, data: newListing });
     } catch (error) {
@@ -48,18 +21,7 @@ class ListingController {
 
   async getListings(req, res, next) {
     try {
-      const listings = await listingSchema.find();
-
-      const formattedListings = listings.map((listing) => ({
-        id: listing._id,
-        make: listing.make,
-        model: listing.model,
-        year: listing.year,
-        price: listing.price,
-        photos: listing.photos,
-        location: listing.location,
-        saleOrRentStatus: listing.saleOrRentStatus,
-      }));
+      const formattedListings = await listingService.getListings();
 
       res.status(200).json({ success: true, data: formattedListings });
     } catch (error) {
@@ -70,30 +32,16 @@ class ListingController {
       });
     }
   }
+
   async getListingById(req, res, next) {
     try {
       const { id } = req.params;
-
-      const listing = await listingSchema.findById(id);
-
       const { refreshToken } = req.cookies;
-      const userId = await profileService.getUserIdFromToken(refreshToken);
 
-      let responseData = {
-        id: listing._id,
-        make: listing.make,
-        model: listing.model,
-        year: listing.year,
-        price: listing.price,
-        photos: listing.photos,
-        location: listing.location,
-        saleOrRentStatus: listing.saleOrRentStatus,
-      };
-
-      if (userId) {
-        responseData.publisher = listing.publisher.name;
-        responseData.contactInformation = listing.contactInformation;
-      }
+      const responseData = await listingService.getListingById(
+        id,
+        refreshToken
+      );
 
       res.status(200).json({ success: true, data: responseData });
     } catch (error) {
@@ -101,24 +49,17 @@ class ListingController {
       res.status(404).json({ success: false, error: "Оголошення не знайдено" });
     }
   }
+
   async updateListing(req, res, next) {
     try {
       const { id } = req.params;
       const updatedData = req.body;
-
       const { refreshToken } = req.cookies;
-      const userId = await profileService.getUserIdFromToken(refreshToken);
-      const user = await userSchema.findById(userId);
-      const listing = await listingSchema.findById(id);
 
-      if (!userId || listing.publisher.toString() !== user._id.toString()) {
-        return res.status(403).json({ error: "Доступ заборонено" });
-      }
-
-      const updatedListing = await listingSchema.findByIdAndUpdate(
+      const updatedListing = await listingService.updateListing(
         id,
         updatedData,
-        { new: true }
+        refreshToken
       );
 
       res.status(200).json({ success: true, data: updatedListing });
@@ -133,17 +74,9 @@ class ListingController {
   async deleteListing(req, res, next) {
     try {
       const { id } = req.params;
-
       const { refreshToken } = req.cookies;
-      const userId = await profileService.getUserIdFromToken(refreshToken);
-      const user = await userSchema.findById(userId);
-      const listing = await listingSchema.findById(id);
 
-      if (!userId || listing.publisher.toString() !== user._id.toString()) {
-        return res.status(403).json({ error: "Доступ заборонено" });
-      }
-
-      await listingSchema.findByIdAndDelete(id);
+      await listingService.deleteListing(id, refreshToken);
 
       res
         .status(200)
