@@ -3,8 +3,7 @@ const profileService = require("../service/profileService");
 class ProfileController {
   async createProfile(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      const userId = await profileService.getUserIdFromToken(refreshToken);
+      const userId = req.user.id;
 
       if (!userId) {
         return res
@@ -20,15 +19,13 @@ class ProfileController {
 
       res.status(201).json({ profile: newProfile });
     } catch (error) {
-      throw new Error(error);
       res.status(500).json({ error: "Помилка при створенні профілю" });
     }
   }
 
   async updateProfile(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
-      const userId = await profileService.getUserIdFromToken(refreshToken);
+      const userId = req.user.id;
 
       if (!userId) {
         return res
@@ -44,7 +41,6 @@ class ProfileController {
 
       res.status(200).json({ profile: updatedProfile });
     } catch (error) {
-      throw new Error(error);
       res.status(500).json({ error: "Помилка при оновленні профілю" });
     }
   }

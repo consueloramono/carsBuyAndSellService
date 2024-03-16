@@ -1,24 +1,24 @@
 const tokenService = require("../service/tokenService");
 
-module.exports = function (req, res, next) {
+module.exports = async function (req, res, next) {
   try {
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {
-      return res.json(`Не знайдено AccessToken`);
+      return res.status(401).json({ error: "Не знайдено AccessToken" });
     }
 
     const accessToken = authorizationHeader.split(" ")[1];
     if (!accessToken) {
-      return res.json(`Не існуючий AccessToken`);
+      return res.status(400).json({ error: "Не існуючий AccessToken" });
     }
 
-    const userData = tokenService.validateAccessToken(accessToken);
+    const userData = await tokenService.validateAccessToken(accessToken);
     if (!userData) {
-      return res.json(`AccessToken не коректний`);
+      return res.status(401).json({ error: "AccessToken не коректний" });
     }
     req.user = userData;
     next();
   } catch (error) {
-    res.json(`Помилка: ${error}`);
+    next(error);
   }
 };

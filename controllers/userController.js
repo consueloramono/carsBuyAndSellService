@@ -11,7 +11,7 @@ class UserController {
       });
       return res.json(userData);
     } catch (error) {
-      throw new Error(error);
+      return res.status(400).json({ error: error.message });
     }
   }
 
@@ -25,7 +25,7 @@ class UserController {
       });
       return res.json(userData);
     } catch (error) {
-      throw new Error(error);
+      return res.status(400).json({ error: error.message });
     }
   }
 
@@ -36,7 +36,7 @@ class UserController {
       res.clearCookie("refreshToken");
       return res.json(token);
     } catch (error) {
-      throw new Error(error);
+      return res.status(400).json({ error: error.message });
     }
   }
 
@@ -50,7 +50,7 @@ class UserController {
       });
       return res.json(userData);
     } catch (error) {
-      throw new Error(error);
+      return res.status(400).json({ error: error.message });
     }
   }
 }

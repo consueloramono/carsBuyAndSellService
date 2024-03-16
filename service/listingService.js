@@ -3,9 +3,7 @@ const profileService = require("../service/profileService");
 const userSchema = require("../models/userSchema");
 
 class ListingService {
-  async createListing(body, refreshToken) {
-    const userId = await profileService.getUserIdFromToken(refreshToken);
-
+  async createListing(body, userId) {
     if (!userId) {
       throw new Error("Невірний або прострочений токен");
     }
@@ -60,6 +58,9 @@ class ListingService {
   async getListingById(id, refreshToken) {
     const listing = await listingSchema.findById(id);
     const userId = await profileService.getUserIdFromToken(refreshToken);
+    if (!listing) {
+      throw new Error("Оголошення не знайдено");
+    }
 
     let responseData = {
       id: listing._id,
@@ -80,12 +81,18 @@ class ListingService {
     return responseData;
   }
 
-  async updateListing(id, updatedData, refreshToken) {
-    const userId = await profileService.getUserIdFromToken(refreshToken);
-    const user = await userSchema.findById(userId);
+  async updateListing(id, updatedData, userId) {
     const listing = await listingSchema.findById(id);
 
-    if (!userId || listing.publisher.toString() !== user._id.toString()) {
+    if (!userId) {
+      throw new Error("Невірний або прострочений токен");
+    }
+
+    if (!listing) {
+      throw new Error("Оголошення не знайдено");
+    }
+
+    if (listing.publisher.toString() !== userId.toString()) {
       throw new Error("Доступ заборонено");
     }
 
@@ -98,12 +105,18 @@ class ListingService {
     return updatedListing;
   }
 
-  async deleteListing(id, refreshToken) {
-    const userId = await profileService.getUserIdFromToken(refreshToken);
-    const user = await userSchema.findById(userId);
+  async deleteListing(id, userId) {
     const listing = await listingSchema.findById(id);
 
-    if (!userId || listing.publisher.toString() !== user._id.toString()) {
+    if (!userId) {
+      throw new Error("Невірний або прострочений токен");
+    }
+
+    if (!listing) {
+      throw new Error("Оголошення не знайдено");
+    }
+
+    if (listing.publisher.toString() !== user._id.toString()) {
       throw new Error("Доступ заборонено");
     }
 

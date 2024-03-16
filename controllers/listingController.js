@@ -1,18 +1,16 @@
 const listingService = require("../service/listingService");
+const { getUserIdFromToken } = require("../service/profileService");
+const { refresh } = require("./userController");
 
 class ListingController {
   async createListing(req, res, next) {
-    const { refreshToken } = req.cookies;
+    const userId = req.user.id;
 
     try {
-      const newListing = await listingService.createListing(
-        req.body,
-        refreshToken
-      );
+      const newListing = await listingService.createListing(req.body, userId);
 
       res.status(201).json({ success: true, data: newListing });
     } catch (error) {
-      throw new Error(error);
       res
         .status(500)
         .json({ success: false, error: "Помилка при створенні оголошення" });
@@ -25,7 +23,6 @@ class ListingController {
 
       res.status(200).json({ success: true, data: formattedListings });
     } catch (error) {
-      throw new Error(error);
       res.status(500).json({
         success: false,
         error: "Помилка при отриманні списку оголошень",
@@ -36,7 +33,7 @@ class ListingController {
   async getListingById(req, res, next) {
     try {
       const { id } = req.params;
-      const { refreshToken } = req.cookies;
+      let { refreshToken } = req.cookies;
 
       const responseData = await listingService.getListingById(
         id,
@@ -45,7 +42,6 @@ class ListingController {
 
       res.status(200).json({ success: true, data: responseData });
     } catch (error) {
-      throw new Error(error);
       res.status(404).json({ success: false, error: "Оголошення не знайдено" });
     }
   }
@@ -54,17 +50,16 @@ class ListingController {
     try {
       const { id } = req.params;
       const updatedData = req.body;
-      const { refreshToken } = req.cookies;
+      const userId = req.user.id;
 
       const updatedListing = await listingService.updateListing(
         id,
         updatedData,
-        refreshToken
+        userId
       );
 
       res.status(200).json({ success: true, data: updatedListing });
     } catch (error) {
-      throw new Error(error);
       res
         .status(500)
         .json({ success: false, error: "Помилка при оновленні оголошення" });
@@ -74,15 +69,14 @@ class ListingController {
   async deleteListing(req, res, next) {
     try {
       const { id } = req.params;
-      const { refreshToken } = req.cookies;
+      const userId = req.user.id;
 
-      await listingService.deleteListing(id, refreshToken);
+      await listingService.deleteListing(id, userId);
 
       res
         .status(200)
         .json({ success: true, message: "Оголошення успішно видалено" });
     } catch (error) {
-      throw new Error(error);
       res
         .status(500)
         .json({ success: false, error: "Помилка при видаленні оголошення" });
