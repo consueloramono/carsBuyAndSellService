@@ -116,7 +116,7 @@ class ListingService {
       throw new Error("Оголошення не знайдено");
     }
 
-    if (listing.publisher.toString() !== user._id.toString()) {
+    if (listing.publisher.toString() !== userId.toString()) {
       throw new Error("Доступ заборонено");
     }
 
