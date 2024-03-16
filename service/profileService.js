@@ -33,7 +33,7 @@ class ProfileService {
     existingProfile.age = profileData.age || existingProfile.age;
     existingProfile.imgLink = profileData.imgLink || existingProfile.imgLink;
 
-    await existingProfile.save();
+    await existingProfile.findOneAndUpdate();
 
     return existingProfile;
   }

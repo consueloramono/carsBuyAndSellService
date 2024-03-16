@@ -36,7 +36,7 @@ class TokenService {
     const tokenData = await tokenSchema.findOne({ user: userId });
     if (tokenData) {
       tokenData.refreshToken = refreshToken;
-      return tokenData.save();
+      return tokenData.findOneAndUpdate();
     }
     const token = await tokenSchema.create({ user: userId, refreshToken });
     return token;
